@@ -5,7 +5,7 @@
 Los Angeles, California. Contact: alex@pointdumeconsulting.com
 
 ## Services
-- [Account targeting and scoring](https://pointdumeconsulting.com/account-targeting/): We work with your sales team to define who you should sell to, find what your best deals had in common, and then score every account in your market on those signals, so you know which ones you're most likely to win..
+- [Account targeting and scoring](https://pointdumeconsulting.com/account-targeting/): We work with your sales team to define who you should sell to, find what your best deals had in common, and then score every account in your market on those signals, so you know which ones you're most likely to win.
 - [Programmatic agents](https://pointdumeconsulting.com/programmatic-agents/): A programmatic agent is software that takes over one repeating job, runs it the same way every time, and sends a person only the exceptions.
 - [AI operating layer](https://pointdumeconsulting.com/ai-operating-layer/): We get a firm's data into one place, connect the systems it already runs on, like Microsoft 365, the ERP and the accounting platform, and give the team one window to ask questions and do their work.
 - [Private AI](https://pointdumeconsulting.com/private-ai/): Private AI puts your firm's documents and history in one private system your team can ask questions, with each person seeing only what they could already open.
