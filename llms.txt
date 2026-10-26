@@ -1,0 +1,27 @@
+# Point Dume Consulting
+
+> Point Dume Consulting is an AI consultancy in Los Angeles. We do three things: account targeting and scoring, programmatic agents, and private AI.
+
+Los Angeles, California. Contact: alex@pointdumeconsulting.com
+
+## Services
+- [Account targeting and scoring](https://pointdumeconsulting.com/account-targeting/): We work with your sales team to define who you should sell to, find what your best deals had in common, and then score every account in your market on those signals, so you know which ones you're most likely to win.
+- [Programmatic agents](https://pointdumeconsulting.com/programmatic-agents/): A programmatic agent is software that takes over one repeating job, runs it the same way every time, and sends a person only the exceptions.
+- [Private AI](https://pointdumeconsulting.com/private-ai/): Private AI puts your firm's documents and history in one private system your team can ask questions, with each person seeing only what they could already open.
+
+## Work
+- [Off-market seller screen](https://pointdumeconsulting.com/work/off-market-seller-screen/): Commercial real estate brokerage, delivered.
+- [Hiring-signal screen](https://pointdumeconsulting.com/work/hiring-signal-screen/): ERP consulting partner, delivered.
+- [Acquisition-target scoring](https://pointdumeconsulting.com/work/acquisition-target-scoring/): M&A advisory practice, delivered.
+
+## Answers
+- [How do I build an AI brain for my company without exposing client files?](https://pointdumeconsulting.com/answers/how-to-build-an-ai-brain-for-your-company/)
+- [Who can help set up AI for my business?](https://pointdumeconsulting.com/answers/who-can-help-set-up-ai-for-my-business/)
+- [How do I get AI help for my sales team?](https://pointdumeconsulting.com/answers/ai-help-for-a-sales-team/)
+- [How can a commercial real estate broker find owners who may sell before they list?](https://pointdumeconsulting.com/answers/find-commercial-property-owners-who-may-sell/)
+- [How do I find companies planning an SAP S/4HANA migration?](https://pointdumeconsulting.com/answers/find-companies-planning-sap-s4hana-migration/)
+
+## Company
+- [About](https://pointdumeconsulting.com/about/)
+- [FAQ](https://pointdumeconsulting.com/faq/)
+- [Contact](https://pointdumeconsulting.com/contact/)

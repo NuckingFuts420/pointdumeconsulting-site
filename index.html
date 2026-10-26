@@ -1,0 +1,498 @@
+<!doctype html>
+<html lang="en" class="nojs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Point Dume Consulting: account targeting and scoring, agents and private AI</title>
+<meta name="description" content="Point Dume Consulting is an AI consultancy in Los Angeles. We do three things: account targeting and scoring, programmatic agents, and private AI.">
+<link rel="canonical" href="https://pointdumeconsulting.com/">
+
+<meta property="og:title" content="Point Dume Consulting: account targeting and scoring, agents and private AI"><meta property="og:description" content="Point Dume Consulting is an AI consultancy in Los Angeles. We do three things: account targeting and scoring, programmatic agents, and private AI."><meta property="og:url" content="https://pointdumeconsulting.com/"><meta property="og:type" content="website"><meta property="og:image" content="https://pointdumeconsulting.com/favicon.png">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "ProfessionalService", "@id": "https://pointdumeconsulting.com/#org", "name": "Point Dume Consulting", "legalName": "Point Dume Consulting LLC", "url": "https://pointdumeconsulting.com/", "logo": "https://pointdumeconsulting.com/favicon.png", "description": "Point Dume Consulting is an AI consultancy in Los Angeles. We do three things: account targeting and scoring, programmatic agents, and private AI.", "email": "alex@pointdumeconsulting.com", "address": {"@type": "PostalAddress", "addressLocality": "Los Angeles", "addressRegion": "CA", "addressCountry": "US"}, "areaServed": "US", "sameAs": ["https://www.linkedin.com/company/point-dume-consulting"], "founder": [{"@type": "Person", "name": "Alex Kashtan", "jobTitle": "Managing Partner"}, {"@type": "Person", "name": "Nick Sneider"}], "knowsAbout": ["Account targeting", "Account scoring", "Win probability", "Evidence-graded scoring", "Public records research", "Sales intelligence", "Programmatic agents", "Private AI"]}</script>
+<script>document.documentElement.className = location.hash==='#site' ? 'js' : 'js game';</script>
+<link rel="icon" href="/favicon.png?v=2" sizes="256x256"><link rel="icon" href="/favicon-32.png?v=2" sizes="32x32"><link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/site.css">
+<style>
+  .game,.game body{height:100%;overflow:hidden;touch-action:none}
+  #wrap{display:none}
+  .game #wrap{position:fixed;inset:0;z-index:50;background:#030c1b;display:flex;align-items:center;justify-content:center}
+  .game #site{visibility:hidden}
+  #stage{position:relative;--u:3px}
+  canvas{display:block;image-rendering:pixelated;image-rendering:crisp-edges;width:100%;height:100%}
+  .ui{position:absolute;inset:0;pointer-events:none;font-family:'Press Start 2P',monospace;color:#e9e4d8;text-align:center}
+
+  /* status bar lives in the sky strip: score left, site menu right, always visible */
+  #bar{position:absolute;top:0;left:0;right:0;height:calc(var(--u)*21);display:flex;align-items:center;justify-content:space-between;
+    padding:0 calc(var(--u)*5);box-sizing:border-box;font-size:max(9px,calc(var(--u)*3.6));color:#16263F}
+  #score{text-align:left;line-height:1.7}
+  #score .hi{color:#2b5f80}
+  #menu{display:flex;gap:calc(var(--u)*2);pointer-events:auto}
+  #menu button{all:unset;cursor:pointer;color:#16263F;padding:calc(var(--u)*1.4) calc(var(--u)*2.2);border:calc(var(--u)*.6) solid #16263F;
+    background:rgba(233,228,216,.55);box-shadow:calc(var(--u)*.6) calc(var(--u)*.6) 0 #16263F}
+  #menu button:hover,#menu button.on{background:#f0c23a}
+  #menu button:active{transform:translate(calc(var(--u)*.6),calc(var(--u)*.6));box-shadow:none}
+
+  #title{position:absolute;left:0;right:0;font-size:calc(var(--u)*8.4);letter-spacing:calc(var(--u)*.6);color:#e9e4d8;
+    text-shadow:0 0 calc(var(--u)*3) #3fb6ff;transition:top 1s ease-in-out}
+  .intro #title{top:calc(var(--a) + var(--u)*17);animation:flash .18s steps(2) 8,glow 2.4s ease-in-out 1.5s infinite}
+  .play #title{top:calc(var(--u)*29)}
+  #pillars{position:absolute;left:0;right:0;font-size:calc(var(--u)*3.3);color:#3d6f8f;white-space:nowrap;transition:top 1s ease-in-out}
+  .intro #pillars{top:calc(var(--a) + var(--u)*32);color:#9fe3ff}
+  .play #pillars{top:calc(var(--u)*42)}
+  #pillars .p.live{color:#9fe3ff}
+  #pillars .p.done{color:#9fe3ff;text-shadow:0 0 calc(var(--u)*2) #3fb6ff}
+  #pillars .dot{color:#2b5f80;margin:0 calc(var(--u)*.4)}
+  #pillars .s{display:inline-block}
+  #pillars .s.on{animation:pop .35s}
+  #box{position:absolute;left:50%;transform:translateX(-50%);width:min(92%,calc(var(--u)*206));top:var(--a);height:calc(var(--u)*44);
+    border:calc(var(--u)*.8) solid #2b7fae;background:rgba(2,12,24,.82);box-shadow:0 0 0 calc(var(--u)*.8) #020a14,0 0 calc(var(--u)*8) #0b3a5c;transition:opacity .6s}
+  .play #box{opacity:0}
+  #intro{position:absolute;left:8%;right:8%;top:calc(var(--a) + var(--u)*52);display:flex;flex-direction:column;gap:calc(var(--u)*4);align-items:center}
+  .play #intro{display:none}
+  #intro .go{font-size:calc(var(--u)*4);color:#9fe3ff;animation:blink 1s steps(2) infinite}
+  #intro .k{font-size:calc(var(--u)*3);color:#6fa8c8;letter-spacing:.15em}
+  #intro .skip{pointer-events:auto;margin-top:calc(var(--u)*3);font-size:calc(var(--u)*3.2);color:#16263F;background:#f0c23a;text-decoration:none;padding:calc(var(--u)*2) calc(var(--u)*3);box-shadow:calc(var(--u)*.6) calc(var(--u)*.6) 0 #b88a1c}
+  #intro .skip:hover{background:#ffe9a8}
+  #depth{position:absolute;bottom:calc(var(--u)*3);left:calc(var(--u)*5);font-size:calc(var(--u)*3);color:#6fa8c8}
+  #log{position:absolute;bottom:calc(var(--u)*3);right:calc(var(--u)*5);font-size:calc(var(--u)*3);color:#6fa8c8}
+
+  #panel{position:absolute;left:50%;transform:translateX(-50%);width:min(88%,calc(var(--u)*200));top:26%;bottom:10%;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:calc(var(--u)*4.5);background:rgba(2,12,24,.93);border:calc(var(--u)*.8) solid #2b7fae;
+    box-shadow:0 0 0 calc(var(--u)*.8) #020a14,0 0 calc(var(--u)*8) #0b3a5c;pointer-events:auto;padding:calc(var(--u)*6);box-sizing:border-box;overflow-y:auto}
+  #panel.hide{display:none}
+  #panel.card{top:calc(var(--u)*26);bottom:calc(var(--u)*6);width:min(94%,calc(var(--u)*280))}
+  #panel.card .b{font-size:calc(var(--u)*3.2)}
+  #panel.page{top:calc(var(--u)*26);bottom:calc(var(--u)*6);width:min(94%,calc(var(--u)*300));justify-content:flex-start;gap:calc(var(--u)*3.6);text-align:left;align-items:stretch}
+  #panel .k{font-size:calc(var(--u)*3.2);color:#6fa8c8;letter-spacing:.15em}
+  #panel .h{font-size:calc(var(--u)*5.4);color:#e9e4d8;line-height:1.6}
+  #panel .b{font-size:calc(var(--u)*3.4);line-height:2;color:#cfd8dc}
+  #panel .an{font-size:calc(var(--u)*3.4);line-height:2;color:#9fe3ff}
+  #panel .who{font-size:calc(var(--u)*3.2);color:#f0c23a;line-height:1.7}
+  #panel .more{font-size:calc(var(--u)*3);color:#f0c23a !important;text-align:center}
+  #panel .go{font-size:calc(var(--u)*3.4);color:#9fe3ff;animation:blink 1s steps(2) infinite;text-align:center}
+  #panel a{color:#9fe3ff;text-decoration:none;pointer-events:auto}
+  #panel ul{list-style:none;margin:0;padding:0;font-size:calc(var(--u)*3.1);line-height:2.1;text-align:left;color:#cfd8dc}
+  #panel li.lost{color:#3d6f8f}
+  #panel .st{color:#6fa8c8}
+  #panel .tabs{display:flex;flex-wrap:wrap;gap:calc(var(--u)*1.6);justify-content:center}
+  #panel .tabs button{all:unset;cursor:pointer;font-size:calc(var(--u)*2.8);padding:calc(var(--u)*1.2) calc(var(--u)*1.8);color:#6fa8c8;border:calc(var(--u)*.5) solid #2b5f80}
+  #panel .tabs button.on,#panel .tabs button:hover{color:#020a14;background:#9fe3ff;border-color:#9fe3ff}
+  @keyframes blink{50%{opacity:0}}
+  @keyframes flash{50%{opacity:0}}
+  @keyframes glow{50%{text-shadow:0 0 calc(var(--u)*6) #3fb6ff,0 0 calc(var(--u)*12) #1f7fbf}}
+  @keyframes pop{0%{transform:scale(2.4)}100%{transform:scale(1)}}
+</style>
+</head>
+<body>
+<div id="wrap"><div id="stage" class="intro">
+  <canvas id="c"></canvas>
+  <div class="ui">
+    <div id="bar">
+      <div id="score"></div>
+      <nav id="menu">
+        <button data-p="about">ABOUT</button>
+        <button data-p="work">WORK</button>
+        <button data-p="contact">CONTACT</button>
+        <button data-skip>SITE &rarr;</button>
+      </nav>
+    </div>
+    <div id="box"></div>
+    <div id="title">POINT DUME CONSULTING</div>
+    <div id="pillars"></div>
+    <div id="intro">
+      <div class="go" id="go">PRESS SPACEBAR TO START</div>
+      <div class="k" id="howto">ARROW KEYS + SPACEBAR TO PLAY</div>
+      <a class="skip" href="#site" data-skip>SKIP TO SITE &rarr;</a>
+    </div>
+    <div id="depth"></div>
+    <div id="log"></div>
+    <div id="panel" class="hide"></div>
+  </div>
+</div></div>
+
+<div id="site"><header class="top"><a class="brand" href="/#site"><img src="/favicon-32.png" alt="" width="24" height="24">Point Dume Consulting</a><nav><a href="/work/">Work</a><a href="/account-targeting/">Targeting & scoring</a><a href="/programmatic-agents/">Agents</a><a href="/private-ai/">Private AI</a><a href="/answers/">Answers</a><a href="/about/">About</a><a href="/contact/">Contact</a><a class="play" href="/" data-play>&#9654; Play</a></nav></header><main><section class="hero"><h1>Point Dume Consulting</h1><p class="lede">Point Dume Consulting is an AI consultancy in Los Angeles. We do three things: account targeting and scoring, programmatic agents, and private AI.</p><p class="pills"><a href="/account-targeting/">ACCOUNT TARGETING AND SCORING</a> &middot; <a href="/programmatic-agents/">PROGRAMMATIC AGENTS</a> &middot; <a href="/private-ai/">PRIVATE AI</a></p></section><section><h2>What we build</h2><div class="grid"><div class="card"><h3><a href="/account-targeting/">Account targeting and scoring</a></h3><p>We work with your sales team to define who you should sell to, find what your best deals had in common, and then score every account in your market on those signals, so you know which ones you're most likely to win.</p></div><div class="card"><h3><a href="/programmatic-agents/">Programmatic agents</a></h3><p>A programmatic agent is software that takes over one repeating job, runs it the same way every time, and sends a person only the exceptions.</p></div><div class="card"><h3><a href="/private-ai/">Private AI</a></h3><p>Private AI puts your firm's documents and history in one private system your team can ask questions, with each person seeing only what they could already open.</p></div></div></section><section><h2>How targeting and scoring works</h2><ol><li>We work with your sales team to define your ideal customer and your real market.</li><li>We read your own wins and losses to find what your best deals had in common.</li><li>We map every account in the market and check each one for those signals in public records.</li><li>You get them ranked by the odds you win, with the evidence on every row.</li></ol><p>If your best clients all drive a Range Rover, we find everyone else who drives a Range Rover. Underneath is a signal architecture: the rules, the sources, the evidence, the scores and a watch that re-checks them. <a href="/account-targeting/">How it works &rarr;</a></p></section><section><h2>What we've run</h2><p>Most of the work is data engineering. Some of the jobs behind the cases below:</p><ul><li>2.9 million deed and mortgage records loaded into one database and screened across 51,037 tax lots.</li><li>12 million rows of insurer price files, provider registry and Medicare data pulled to score 1,334 psychiatry practices on the rates insurers have contracted to pay them.</li><li>Job postings read at 734 companies across five hiring systems. Comparing the text caught 506 postings a parent job board had copied across 13 accounts.</li><li>217 deeds machine-read to check who really holds title, which took 15 lots off the top of a list.</li><li>An audit that recomputed 27 of our own claims before delivery. Two bugs were fixed and the claims that failed were cut.</li></ul></section><section><h2>Agents built to run cheap, for years</h2><p>Most agent companies charge per run or per outcome, so the bill grows every time the agent works. We don't charge per use. You pay for the build, then a flat monthly fee for fixes, changes and support. The agent gets cheaper per job the longer it runs: most steps are ordinary code, a model is only called where a step needs judgment, like flagging a number that looks wrong, and every run has a spending cap. What it costs to run is hosting and those few model calls, not a fee to us.</p><p>Each agent we build has a documented interface, so the AI your company runs, now or later, can call it the way a person would hand a job to a colleague. Your AI brain asks for the weekly report or the checked file, and the agent does it the same way it always has, with the same checks and the same log. When you change AI vendors, the agents stay.</p><p>We'll sell you the code outright instead of licensing it to you. You get the source, the documentation and the right to change it, and the agent becomes part of how your business runs, on your books, not ours. Licensing is there too if you'd rather we keep running it.</p></section><section><h2>How every project is built</h2><ul><li>Each build starts from the client's market, deal size and buyer.</li><li>Every row says where it came from: a record we read, a name we classified, or a proxy.</li><li>If we couldn't read an account, it's marked "not checked". It never shows up as "no signal".</li><li>Before delivery, an audit re-checks our numbers and we cut any claim that fails.</li><li>No per-run or per-outcome pricing: you pay for the build and a flat monthly fee for support, and every run has a spending cap.</li><li>You can buy the code outright, so what we build becomes your company's own.</li></ul></section><section><h2>Work</h2><article class="work"><h3><a href="/work/off-market-seller-screen/">Off-market seller screen</a></h3><p class="meta">Commercial real estate brokerage &middot; <span class="tag">DELIVERED</span></p><p>Screens a market's property records (deeds, mortgages, liens, tax, court and pre-foreclosure filings) and grades the owners most likely to sell. 2.9 million records, 51,037 tax lots screened.</p></article><article class="work"><h3><a href="/work/hiring-signal-screen/">Hiring-signal screen</a></h3><p class="meta">ERP consulting partner &middot; <span class="tag">DELIVERED</span></p><p>Reads job postings across five applicant-tracking systems and company career sites and flags accounts whose posts describe replacing or moving an ERP system. Each flag carries the sentence and the link. 1,479 accounts searched.</p></article><article class="work"><h3><a href="/work/acquisition-target-scoring/">Acquisition-target scoring</a></h3><p class="meta">M&A advisory practice &middot; <span class="tag">DELIVERED</span></p><p>Scores psychiatry practices for a buyer on the rates insurers have contracted to pay them, from price-transparency files, the federal provider registry and Medicare data. 1,334 practices scored 0–100, with reasons and red flags.</p></article><p><a href="/work/">All work &rarr;</a></p></section><section><h2>Private AI: how we build a firm's AI brain</h2><p>Most firms' knowledge sits in shared drives, inboxes and people's heads. We turn it into one private system the team can ask in plain English.</p><p><a href="/private-ai/">How it works &rarr;</a></p></section><section><h2>Questions we answer</h2><ul><li><a href="/answers/how-to-build-an-ai-brain-for-your-company/">How do I build an AI brain for my company without exposing client files?</a></li><li><a href="/answers/who-can-help-set-up-ai-for-my-business/">Who can help set up AI for my business?</a></li><li><a href="/answers/ai-help-for-a-sales-team/">How do I get AI help for my sales team?</a></li><li><a href="/answers/find-commercial-property-owners-who-may-sell/">How can a commercial real estate broker find owners who may sell before they list?</a></li><li><a href="/answers/find-companies-planning-sap-s4hana-migration/">How do I find companies planning an SAP S/4HANA migration?</a></li></ul></section><section><h2>About</h2><p>Point Dume Consulting is Alex Kashtan and Nick Sneider, in Los Angeles. Alex is Managing Partner. We help a sales team define who to sell to, find the signals in its own wins and losses, rank every account in the market by the odds they win it, and build the agents and private AI that run the work around it. Then we hand it over running.</p><p><a href="/about/">More about us &rarr;</a></p></section><section><h2>Contact</h2><p>Email Alex at <a href="mailto:alex@pointdumeconsulting.com">alex@pointdumeconsulting.com</a> with what you need to find or decide.</p></section></main><footer><p>Point Dume Consulting LLC &middot; Los Angeles, California &middot; <a href="mailto:alex@pointdumeconsulting.com">alex@pointdumeconsulting.com</a> &middot; <a href="https://www.linkedin.com/company/point-dume-consulting">LinkedIn</a></p></footer></div>
+
+<script>
+(() => {
+const SURF = 24;
+let W = 224, H = 288;
+const cv = document.getElementById('c'), g = cv.getContext('2d');
+const stage = document.getElementById('stage');
+let kelp = [], ambient = [];
+const sub = { x: 101, y: 252 };
+function scenery(){
+  kelp = Array.from({length: Math.round(W/25)}, (_,i) => ({x: 8+i*25+((i*37)%11), h: 22+((i*53)%30)}));
+  ambient = Array.from({length: Math.round(W/7)}, () => ({x:Math.random()*W, y:SURF+Math.random()*(H-SURF), v:.15+Math.random()*.35, r:Math.random()<.2?2:1}));
+}
+// the ocean fills the whole window: the playfield widens to the screen's shape instead of letterboxing
+function fit(){
+  const ar = innerWidth / innerHeight;
+  const nw = Math.max(224, Math.min(520, Math.round(288 * ar)));
+  const nh = Math.max(288, Math.min(520, Math.round(nw / ar)));
+  if(nw !== W || nh !== H || !kelp.length){ W = nw; H = nh; cv.width = W; cv.height = H; g.imageSmoothingEnabled = false; scenery();
+    sub.y = H-36; sub.x = Math.min(sub.x, W-24); }
+  const s = Math.min(innerWidth / W, innerHeight / H);
+  stage.style.width = W*s+'px'; stage.style.height = H*s+'px'; stage.style.setProperty('--u', s+'px'); stage.style.setProperty('--a', (H*s*.35)+'px');
+}
+addEventListener('resize', fit);
+fit();
+if(matchMedia('(pointer:coarse)').matches){ document.getElementById('go').textContent='TAP TO START';
+  document.getElementById('howto').textContent='DRAG TO MOVE \u00b7 AUTO-FIRE'; }
+
+// ---- content ----
+// each wave spells a lane; clearing it unlocks one anonymized case file
+const SHOW_K2 = /*K2*/false;   // set by build_site.py --k2
+const FILES = {
+  cre: { who:'Commercial real estate brokerage', what:'Off-market seller screen', st:'DELIVERED', url:'/work/off-market-seller-screen/',
+    how:'Screens a market\u2019s property records (deeds, mortgages, liens, tax, court and pre-foreclosure filings) and grades the owners most likely to sell. 2.9 million records, 51,037 tax lots screened.' },
+  sap: { who:'ERP consulting partner', what:'Hiring-signal screen', st:'DELIVERED', url:'/work/hiring-signal-screen/',
+    how:'Reads job postings across five applicant-tracking systems and company career sites and flags accounts whose posts describe replacing or moving an ERP system. Each flag carries the sentence and the link. 1,479 accounts searched.' },
+  psych: { who:'M&A advisory practice', what:'Acquisition-target scoring', st:'DELIVERED', url:'/work/acquisition-target-scoring/',
+    how:'Scores psychiatry practices for a buyer on the rates insurers have contracted to pay them, from price-transparency files, the federal provider registry and Medicare data. 1,334 practices scored 0\u2013100, with reasons and red flags.' },
+  agent: { who:'How we build an agent', what:'One job, end to end', st:'', url:'/programmatic-agents/',
+    how:'Pull from every source, normalize, check, publish, and keep the file, the changes, the approver and the time for every step. Clean runs finish on their own. A person approves the exceptions.' },
+  brain: { who:'How we build a firm\u2019s AI brain', what:'Private AI', st:'', url:'/private-ai/',
+    how:'Access follows the folder rights you already have. Fund, investor and tax documents can be kept out entirely. Every answer points to the file and page it came from, and every run has a cost cap.' },
+};
+// each wave spells a lane; clearing it unlocks one case file
+const PILLARS = [
+  { word:'TARGETING AND SCORING', line:'We work with your sales team to find what your best deals had in common, then score your whole market on it. If your best clients drive a Range Rover, we find everyone else who drives one.', file: FILES.cre },
+  { word:'PROGRAMMATIC AGENTS', line:'Software that takes over one repeating job and runs it for years. No per-run fees, your company\u2019s AI can call it as a tool, and you can own the code.', file: FILES.agent },
+  { word:'PRIVATE AI', line:'Your firm\u2019s documents and history in one private system your team can ask questions, with each person seeing only what they could already open.', file: FILES.brain },
+];
+const BONUS = FILES.psych;
+const CONTACT = 'alex@pointdumeconsulting.com';
+
+// Work panel: one card per lane. Analogy, definition, examples, then our work with its status tag.
+const LANES = [
+  { name:'TARGETING & SCORING', an:'', mean:PILLARS[0].line,
+    ex:['Companies whose job posts name the software they are about to replace','Buildings whose deed, lien and court history says the owner may sell, graded A to D','Acquisition targets ranked by the rates insurers have contracted to pay them'],
+    work:[FILES.cre, FILES.sap, FILES.psych] },
+  { name:'PROGRAMMATIC AGENTS', an:'Like a deckhand: one job, done the same way, without being asked.', mean:PILLARS[1].line,
+    ex:['A weekly pipeline-change report built from three systems, with the odd cases sent to a person','An analyst\u2019s spreadsheet rules rewritten as tested, versioned code','Supplier nonconformities logged, routed and chased to a corrective action'],
+    work: [FILES.agent] },
+  { name:'PRIVATE AI', an:'Like the ship\u2019s logbook, if it could answer back.', mean:PILLARS[2].line,
+    ex:['\u201cWhat did we tell this client last year?\u201d','\u201cWhich deals did we pass on, and why?\u201d','A new hire\u2019s questions, without pulling a partner off a deal'],
+    work:[FILES.brain] },
+];
+const TOGETHER = 'Targeting and scoring find who to sell to. Agents do the repeat work. Private AI remembers it all.';
+const tag = f => f.st ? ` &middot; ${f.st}` : '';
+
+// ---- sprites: X body, W eye, P pupil, O porthole, D shade, R prop, K cork, G glass, C paper, S surfer, B board ----
+const OCTO = [[
+ "....XXXX....","..XXXXXXXX..",".XXXXXXXXXX.",".XWWXXXXWWX.","XXWPXXXXWPXX","XXXXXXXXXXXX",
+ ".XXXXXXXXXX.","..XXXXXXXX..",".X.X.XX.X.X.","X..X.XX.X..X","X.X..XX..X.X",".X..X..X..X."],[
+ "....XXXX....","..XXXXXXXX..",".XXXXXXXXXX.",".XWWXXXXWWX.","XXPWXXXXPWXX","XXXXXXXXXXXX",
+ ".XXXXXXXXXX.","..XXXXXXXX..","..X.XXXX.X..",".X.X.XX.X.X.","X..X.XX.X..X","X.X..X...X.X"]];
+const SUB = [
+ "..........XXX.........", "..........X...........", "..........X...........",
+ "........XXXXXX........", "........XWWXXX........", "....XXXXXXXXXXXXX.....",
+ "..XXXXXXXXXXXXXXXXX.R.", ".XXOOXXXOOXXXOOXXXXXRR", "XXXOOXXXOOXXXOOXXXXXR.",
+ ".XXXXXXXXXXXXXXXXXXX..", "..DDDDDDDDDDDDDDDDD.R.", "....DDDDDDDDDDDDD....."];
+const BOTTLE = ["...GGGGGGGG..","KKGGCCCCCCGGG","KKGGCCCCCCGGG","...GGGGGGGG.."];
+const SURFER = ["....SS....","....SS....","..SSSSSS..",".S..SS..S.","....SS....","...S..S...","..S....S..","BBBBBBBBBB",".BBBBBBBB."];
+const PAL = { X:'#e9e4d8', W:'#16263F', P:'#9fe3ff', O:'#9fe3ff', D:'#b88a1c', R:'#f0c23a', K:'#8a5a2b', G:'#5fb88a', C:'#f3ecd2', S:'#16263F', B:'#f0c23a' };
+function spr(rows, x, y, body, pupil){ for(let j=0;j<rows.length;j++) for(let i=0;i<rows[j].length;i++){
+  const c = rows[j][i]; if(c==='.') continue;
+  g.fillStyle = c==='X' ? body : (c==='P' && pupil) ? pupil : PAL[c]; g.fillRect(x+i|0, y+j|0, 1, 1);} }
+
+// ---- scoring ----
+const PTS = { octo:10, gold:50, word:250, bottle:500, surfer:1000, surferAgain:100 };
+let score = 0, hi = +(localStorage.getItem('pdc-hi') || 0);
+const $score = document.getElementById('score');
+function renderScore(){ $score.innerHTML = `SCORE ${String(score).padStart(6,'0')}<br><span class="hi">HI ${String(hi).padStart(6,'0')}</span>`; }
+let floats = [];
+function award(n, x, y){ score += n; if(score > hi){ hi = score; localStorage.setItem('pdc-hi', hi); } renderScore();
+  if(x !== undefined) floats.push({x, y, txt:'+'+n, life:45}); }
+
+// ---- state ----
+const ROWS = 3, SP = 16, VS = 14, TOP = 66;
+let COLS = 9, mode = 'title', t = 0, wi = 0, stun = 0, cooldown = 0, lockUntil = 0, clearing = false;
+sub.x = W/2-11; sub.y = H-36;
+let shots = [], inks = [], octos = [], pops = [], letters = [], slots = [], bottle = null, surfer = null;
+let dir = 1, speed = .16, found = [], bonusFound = false, surferFound = false;
+const keys = {};
+const $pil = document.getElementById('pillars'), $panel = document.getElementById('panel'),
+      $depth = document.getElementById('depth'), $log = document.getElementById('log'), $menu = document.getElementById('menu');
+
+function setStage(s){ stage.className = s; }
+function renderPillars(){
+  $pil.innerHTML = PILLARS.map((p,i) => {
+    if(mode==='title' || i < wi || (i===wi && mode==='card')) return `<span class="p done">${p.word.replace(' ','&nbsp;')}</span>`;
+    if(i === wi && (mode==='play'||mode==='bonus')) return `<span class="p live">${slots.map(s=>`<span class="s${s.on&&s.ch!==' '?' on':''}">${s.ch===' '?'&nbsp;':(s.on?s.ch:'?')}</span>`).join('')}</span>`;
+    return `<span class="p">${p.word.replace(/[^ ]/g,'?').replace(' ','&nbsp;')}</span>`; }).join('<span class="dot">&middot;</span>');
+}
+const total = () => found.length + (bonusFound?1:0) + (surferFound?1:0);
+function renderLog(){ $log.textContent = mode==='title' ? '' : `FILES ${total()}/6`; }
+function panel(html, cls){ $panel.innerHTML = html; $panel.className = cls || ''; $panel.scrollTop = 0; lockUntil = performance.now()+700; }
+function hidePanel(){ $panel.className = 'hide'; }
+
+function startWave(i){
+  wi = i; mode = 'play'; hidePanel(); setStage('play');
+  slots = [...PILLARS[i].word].map(ch => ({ch, on: ch===' '}));
+  $depth.textContent = `DEPTH ${String((i+1)*100).padStart(3,'0')}M`;
+  COLS = Math.max(9, Math.min(13, Math.floor((W-60)/SP)));
+  const idx = slots.map((s,k)=>s.ch===' '?-1:k).filter(k=>k>=0);
+  const cells = [...Array(ROWS*COLS).keys()].sort(() => Math.random()-.5);
+  const carrier = new Map(idx.map((k,n) => [cells[n], k]));
+  octos = [];
+  for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++){ const n = r*COLS+c;
+    octos.push({ slot: carrier.has(n) ? carrier.get(n) : -1, x: W/2 - COLS*SP/2 + c*SP + 2, y: TOP + r*VS, alive:true, flee:false, ph:(r+c)%2 }); }
+  dir = 1; speed = .14 + i*.04; shots = []; inks = []; bottle = null; letters = []; clearing = false;
+  renderPillars(); renderLog();
+}
+function title(){
+  mode = 'title'; wi = 0; octos = []; hidePanel(); setStage('intro');
+  renderPillars(); renderLog(); $depth.textContent = '';
+}
+function cardFor(p, n){
+  mode = 'card'; renderPillars(); renderLog();
+  panel(`<div class="k">CASE FILE ${String(n).padStart(2,'0')} UNLOCKED &middot; ${p.word}</div>
+    <div class="b">${p.line}</div>
+    <div class="who">${p.file.who.toUpperCase()}${tag(p.file)}</div>
+    <div class="h">${p.file.what}</div>
+    <div class="b">${p.file.how}</div>
+    <a class="more" href="${p.file.url}">READ THE FULL FILE &rarr;</a>
+    <div class="go">SPACE TO DIVE DEEPER</div>`, 'card');
+}
+function bonusCard(){
+  mode = 'bonus'; bonusFound = true; renderLog();
+  panel(`<div class="k">MESSAGE IN A BOTTLE &middot; BONUS FILE</div>
+    <div class="who">${BONUS.who.toUpperCase()}${tag(BONUS)}</div>
+    <div class="h">${BONUS.what}</div>
+    <div class="b">${BONUS.how}</div>
+    <div class="go">SPACE TO KEEP GOING</div>`, 'card');
+}
+function surferCard(resume){
+  mode = 'bonus'; surferFound = true; renderLog();
+  panel(`<div class="k">WIPEOUT &middot; CREW FILE</div>
+    <div class="who">POINT DUME CONSULTING LLC &middot; LOS ANGELES, CALIFORNIA</div>
+    <div class="h">Build things that work and are easy to keep working.</div>
+    <div class="b">Then go surf.</div>
+    <div class="go">SPACE TO PADDLE BACK OUT</div>`);
+  surferResume = resume;
+}
+let surferResume = 'play';
+function finish(){
+  mode = 'end'; wi = PILLARS.length; renderPillars(); renderLog(); $depth.textContent = 'SEAFLOOR';
+  const rows = PILLARS.map(p => `<li>&#9670; ${p.file.what}</li>`).join('') +
+    (bonusFound ? `<li>&#9670; ${BONUS.what}</li>` : `<li class="lost">&#9671; a bottle drifted past</li>`) +
+    (surferFound ? `<li>&#9670; Crew file</li>` : `<li class="lost">&#9671; a surfer got away</li>`);
+  panel(`<div class="k">LOGBOOK &middot; ${total()}/6 FILES &middot; SCORE ${score}</div>
+    <ul>${rows}</ul>
+    <div class="b">Something you need to find, or decide?</div>
+    <div class="h"><a href="mailto:${CONTACT}">${CONTACT}</a></div>
+    <div class="go">SPACE TO DIVE AGAIN</div>`);
+}
+
+// ---- site pages, opened from the status bar; the game pauses underneath ----
+let workTab = 0;
+const PAGES = {
+  about: () => `<div class="k">ABOUT</div>
+    <div class="h">Point Dume Consulting</div>
+    <div class="an">${TOGETHER}</div>
+    <div class="b">Point Dume Consulting is Alex Kashtan and Nick Sneider, in Los Angeles. We map your market, rank every account by the odds you win it, and build the agents and private AI that run the work around it. Then we hand it over running.</div>
+    <a class="more" href="/about/">MORE ABOUT US &rarr;</a>
+    <div class="who">LOS ANGELES, CALIFORNIA</div>`,
+  work: () => { const L = LANES[workTab];
+    return `<div class="tabs">${LANES.map((l,i)=>`<button data-tab="${i}" class="${i===workTab?'on':''}">${l.name}</button>`).join('')}</div>
+    ${L.an ? `<div class="an">${L.an}</div>` : ''}
+    <div class="b">${L.mean}</div>
+    <div class="k">FOR EXAMPLE</div>
+    <ul>${L.ex.map(e=>`<li>&#9656; ${e}</li>`).join('')}</ul>
+    <div class="k">OUR WORK</div>
+    ${L.work.map(f=>`<div class="who">${f.who.toUpperCase()} &middot; <a href="${f.url}">${f.what}</a>${f.st?` <span class="st">[${f.st}]</span>`:''}</div><div class="b">${f.how}</div>`).join('')}`; },
+  contact: () => `<div class="k">CONTACT</div>
+    <div class="b">Something you need to find, or decide?</div>
+    <div class="h"><a href="mailto:${CONTACT}">${CONTACT}</a></div>
+    <div class="b">A person writes back.</div>`,
+};
+let menuFrom = null, page = null;
+function openPage(name){
+  if(mode!=='menu') menuFrom = { mode, html: $panel.className==='hide' ? null : $panel.innerHTML, pcls: $panel.className, cls: stage.className };
+  mode = 'menu'; page = name; setStage('play');
+  const hint = name==='work' ? '&larr; &rarr; LANES &nbsp;&middot;&nbsp; &uarr; &darr; SCROLL &nbsp;&middot;&nbsp; ' : '';
+  panel(PAGES[name]() + `<div class="go">${hint}SPACE TO ${menuFrom.mode==='play' ? 'RESUME' : 'CLOSE'}</div>`, name==='contact' ? '' : 'page');
+  [...$menu.querySelectorAll('button')].forEach(b => b.classList.toggle('on', b.dataset.p===name));
+}
+function closePage(){
+  const f = menuFrom; menuFrom = null; page = null; mode = f.mode; setStage(f.cls);
+  [...$menu.querySelectorAll('button')].forEach(b => b.classList.remove('on'));
+  if(f.html){ $panel.innerHTML = f.html; $panel.className = f.pcls; } else hidePanel();
+}
+const root = document.documentElement;
+function skip(e){ if(e) e.preventDefault(); root.classList.remove('game'); history.replaceState(null,'','#site'); scrollTo(0,0); }
+document.querySelectorAll('[data-skip]').forEach(el => el.addEventListener('click', skip));
+document.querySelectorAll('[data-play]').forEach(el => el.addEventListener('click', e => { e.preventDefault(); root.classList.add('game'); history.replaceState(null,'',location.pathname); fit(); }));
+$menu.addEventListener('click', e => { const b = e.target.closest('button'); if(!b || b.hasAttribute('data-skip')) return; b.blur();
+  if(mode==='menu' && page===b.dataset.p){ lockUntil = 0; advance(); } else openPage(b.dataset.p); });
+$panel.addEventListener('click', e => {
+  const tb = e.target.closest('[data-tab]'); if(tb){ workTab = +tb.dataset.tab; openPage('work'); return; }
+  if(e.target.tagName!=='A' && mode!=='menu') advance(); });
+
+function advance(){
+  if(performance.now() < lockUntil) return;
+  if(mode==='menu') { closePage(); return; }
+  if(mode==='title') { found = []; bonusFound = false; surferFound = false; score = 0; renderScore(); startWave(0); }
+  else if(mode==='card') { if(wi+1 < PILLARS.length) startWave(wi+1); else finish(); }
+  else if(mode==='bonus') { mode = surferResume; surferResume = 'play';
+    if(mode==='title') { hidePanel(); setStage('intro'); } else hidePanel(); }
+  else if(mode==='end') title();
+}
+function fire(){ if(mode!=='play'||cooldown>0||stun>0) return; shots.push({x:sub.x+10, y:sub.y-1}); cooldown = 10; }
+
+// ---- input: arrows + space ----
+addEventListener('keydown', e => {
+  if(!root.classList.contains('game')) return;
+  if(e.key.startsWith('Arrow') || e.key===' ') e.preventDefault();
+  keys[e.key] = true;
+  if(mode==='menu'){
+    if(e.key==='Escape'){ lockUntil = 0; advance(); return; }
+    if(e.key==='ArrowDown' || e.key==='ArrowUp'){ $panel.scrollBy({top:(e.key==='ArrowDown'?1:-1)*$panel.clientHeight*.4, behavior:'smooth'}); return; }
+    if(page==='work' && (e.key==='ArrowRight' || e.key==='ArrowLeft') && !e.repeat){
+      workTab = (workTab + (e.key==='ArrowRight'?1:LANES.length-1)) % LANES.length; openPage('work'); return; }
+  }
+  if((mode==='card'||mode==='bonus') && (e.key==='ArrowDown'||e.key==='ArrowUp')) $panel.scrollBy({top:(e.key==='ArrowDown'?1:-1)*$panel.clientHeight*.4, behavior:'smooth'});
+  if(e.key===' ' && !e.repeat){ if(mode==='play') fire(); else advance(); }
+});
+addEventListener('keyup', e => keys[e.key] = false);
+let touchX = null;
+function tx(e){ const r = cv.getBoundingClientRect(); return (e.touches[0].clientX - r.left) / r.width * W; }
+stage.addEventListener('touchstart', e => { if(e.target.closest('a,button,#panel')) return; e.preventDefault();
+  if(mode!=='play'){ advance(); return; } touchX = tx(e); }, {passive:false});
+stage.addEventListener('touchmove', e => { if(e.target.closest('#panel')) return; e.preventDefault(); if(mode==='play') touchX = tx(e); }, {passive:false});
+stage.addEventListener('touchend', () => touchX = null);
+
+// ---- surface wave the surfer rides ----
+function waveH(dx){ return dx < -18 || dx > 10 ? 0 : dx <= 4 ? Math.round(9*(1-(4-dx)/22)) : Math.round(9*(1-(dx-4)/6)); }
+function surferY(){ return SURF - waveH(4) - SURFER.length + 2; }
+
+// ---- update ----
+function update(){
+  t++; if(cooldown>0) cooldown--; if(stun>0) stun--;
+  ambient.forEach(b => { b.y -= b.v; b.x += Math.sin((t+b.y)*.03)*.1; if(b.y<SURF+2){ b.y=H+4; b.x=Math.random()*W; } });
+  pops.forEach(p => { p.r += .6; p.life--; }); pops = pops.filter(p => p.life>0);
+  floats.forEach(f => { f.y -= .4; f.life--; }); floats = floats.filter(f => f.life>0);
+
+  // the surfer is the house ad: he rides the waterline forever, on every screen that isn't a card
+  if(!surfer && (mode==='title' || mode==='play') && (t===240 || (t>240 && (t-240)%1100===0))) surfer = {x:-24, v:.5};
+  if(surfer && (mode==='title' || mode==='play' || mode==='end')){ surfer.x += surfer.v; if(surfer.x > W+24) surfer = null; }
+  if(mode!=='play') return;
+
+  if(stun===0){
+    if(keys.ArrowLeft) sub.x -= 1.6;
+    if(keys.ArrowRight) sub.x += 1.6;
+    if(keys[' '] && t%18===0) fire();
+    if(touchX!==null){ sub.x += Math.max(-1.8, Math.min(1.8, touchX-11-sub.x)); if(t%16===0) fire(); }
+  }
+  sub.x = Math.max(2, Math.min(W-24, sub.x));
+
+  shots.forEach(s => s.y -= 3.2); shots = shots.filter(s => s.y > 0);
+  inks.forEach(s => { s.y += 1.1; s.x += Math.sin((t+s.y)*.2)*.3; }); inks = inks.filter(s => s.y < H-18);
+
+  octos.forEach(o => { if(o.flee){ o.y -= 2.2; if(o.y < SURF-14) o.alive = false; } });
+  const live = octos.filter(o => o.alive && !o.flee);
+  let edge = false;
+  const pace = speed * (1 + 2*(1 - live.length/octos.length));
+  live.forEach(o => { o.x += dir*pace; if(o.x<3||o.x>W-15) edge = true; });
+  if(edge){ dir*=-1; live.forEach(o => { o.y += 4; o.x += dir; }); }
+  if(live.some(o => o.y > sub.y-16)) live.forEach(o => o.y -= 60);   // they back off; nobody dies
+  if(live.length && t % Math.max(28, 80-wi*14) === 0){
+    const pick = live[(Math.random()*live.length)|0];
+    const shooter = live.filter(o => Math.abs(o.x-pick.x)<2).sort((a,b)=>b.y-a.y)[0];
+    inks.push({x:shooter.x+6, y:shooter.y+12});
+  }
+
+  // the bottle: Space Invaders' mystery ship. Drifts through from wave 2 until caught.
+  if(!bonusFound && !bottle && wi>=1 && live.length && t%600===300){
+    const l = Math.random()<.5; bottle = {x: l?-14:W+2, y:34, v: l?.4:-.4};
+  }
+  if(bottle){ bottle.x += bottle.v; bottle.y = 34 + Math.sin(t*.06)*2; if(bottle.x<-20||bottle.x>W+20) bottle = null; }
+
+  shots.forEach(sh => {
+    if(sh.y < 0) return;
+    for(const o of live){ if(o.alive && sh.x>=o.x && sh.x<=o.x+12 && sh.y>=o.y && sh.y<=o.y+12){
+      o.alive = false; sh.y = -99; pops.push({x:o.x+6, y:o.y+6, r:2, life:18});
+      if(o.slot >= 0){ letters.push({ch: slots[o.slot].ch, slot:o.slot, x:o.x+6, y:o.y+6, life:0}); award(PTS.gold, o.x+6, o.y); }
+      else award(PTS.octo, o.x+6, o.y);
+      break; } }
+    if(sh.y>0 && bottle && sh.x>=bottle.x && sh.x<=bottle.x+13 && sh.y>=bottle.y-2 && sh.y<=bottle.y+5){
+      sh.y = -99; pops.push({x:bottle.x+6, y:bottle.y+2, r:3, life:22}); award(PTS.bottle, bottle.x+6, bottle.y+8); bottle = null; bonusCard(); }
+    if(sh.y>0 && surfer){ const sy = surferY();
+      if(sh.x>=surfer.x && sh.x<=surfer.x+10 && sh.y>=sy && sh.y<=sy+SURFER.length+3){
+        sh.y = -99; pops.push({x:surfer.x+5, y:sy+4, r:3, life:24}, {x:surfer.x+2, y:SURF, r:2, life:18}, {x:surfer.x+8, y:SURF, r:2, life:20});
+        const first = !surferFound; award(first ? PTS.surfer : PTS.surferAgain, surfer.x+5, SURF+10);
+        surfer = null; if(first) surferCard('play'); } }
+  });
+
+  inks.forEach(k => { if(stun===0 && k.x>sub.x && k.x<sub.x+22 && k.y>sub.y+3 && k.y<sub.y+12){ stun = 50; k.y = H; } });
+
+  letters.forEach(L => { L.life++; L.y -= .9; L.x += Math.sin(L.life*.15)*.4;
+    if(L.life>40 && !L.done){ L.done = true; pops.push({x:L.x, y:L.y, r:3, life:16});
+      slots[L.slot].on = true; renderPillars();
+      if(slots.every(s=>s.on) && !clearing){ clearing = true; award(PTS.word);
+        octos.forEach(o => { if(o.alive) o.flee = true; });   // word's done: the rest of the school bolts
+        setTimeout(() => { clearing = false; found.push(wi); cardFor(PILLARS[wi], wi+1); }, 1100); } } });
+  letters = letters.filter(L => !L.done);
+}
+
+// ---- draw ----
+const BANDS = ['#0b3a5c','#0a3354','#092c4b','#082643','#07203a','#061a32','#05152a','#041022','#030c1b'];
+function draw(){
+  g.fillStyle='#8fc9e6'; g.fillRect(0,0,W,SURF);
+  g.fillStyle='#a9d6ec'; g.fillRect(0,0,W,8);
+  g.fillStyle='#c8e6f4'; for(let x=0;x<W;x+=32) g.fillRect((x*1.7+t*.05)%W|0, 4+(x%3), 10, 2);
+  const bh = (H-SURF)/BANDS.length;
+  BANDS.forEach((c,i) => { g.fillStyle=c; g.fillRect(0, SURF+i*bh|0, W, Math.ceil(bh)+1);
+    if(i<BANDS.length-1){ g.fillStyle=BANDS[i+1]; for(let x=(i%2)*2;x<W;x+=4) g.fillRect(x,SURF+(i+1)*bh-1|0,2,1); } });
+  g.fillStyle='#2b7fae'; g.fillRect(0, SURF-2, W, 2);
+  g.fillStyle='#9fe3ff'; for(let x=0;x<W;x+=8) g.fillRect((x+t*.3)%W|0, SURF-2+(Math.sin((x+t)*.08)>0?0:1), 4, 1);
+  if(surfer){ for(let dx=-18; dx<=10; dx++){ const h = waveH(dx); if(!h) continue;
+      g.fillStyle='#2b7fae'; g.fillRect(surfer.x+dx|0, SURF-2-h, 1, h);
+      g.fillStyle = dx>2 ? '#ffffff' : '#9fe3ff'; g.fillRect(surfer.x+dx|0, SURF-2-h, 1, 1); }
+    spr(SURFER, surfer.x, surferY()); }
+  g.globalAlpha=.06; g.fillStyle='#9fe3ff';
+  for(let r=0;r<Math.round(W/56);r++){ const x0 = 20+r*60+Math.sin(t*.01+r)*8; for(let y=SURF;y<H-40;y+=2) g.fillRect(x0+(y-SURF)*.35|0, y, 10, 2); }
+  g.globalAlpha=1;
+  g.fillStyle='#3a3424'; g.fillRect(0,H-16,W,16);
+  g.fillStyle='#4a4230'; for(let x=0;x<W;x+=6) g.fillRect(x+(x%12?0:3), H-16+((x*7)%5), 2, 1);
+  kelp.forEach(k => { for(let y=0;y<k.h;y+=2){ const sway = Math.sin(t*.03 + y*.15 + k.x)*(y*.08);
+    g.fillStyle = y%4?'#1f6b45':'#2a8a58'; g.fillRect(k.x+sway|0, H-16-y, 2, 2); } });
+  g.fillStyle='#6fb7dd'; ambient.forEach(b => g.fillRect(b.x|0,b.y|0,b.r,b.r));
+
+  if(mode!=='title' && mode!=='end'){
+    octos.forEach(o => { if(o.alive) spr(OCTO[(Math.floor(t/20)+o.ph)%2], o.x, o.y, '#e9e4d8', o.slot>=0 ? '#f0c23a' : null); });
+    if(bottle) spr(BOTTLE, bottle.x, bottle.y);
+    g.fillStyle='#ffe9a8'; shots.forEach(s => g.fillRect(s.x|0, s.y|0, 1, 4));
+    inks.forEach(s => { g.fillStyle='#1a0f24'; g.fillRect(s.x-1|0, s.y|0, 3, 3); g.fillStyle='#b48ad8'; g.fillRect(s.x|0, s.y|0, 1, 1); });
+    g.font = '8px "Press Start 2P", monospace'; g.textAlign='center'; g.textBaseline='middle';
+    letters.forEach(L => { g.strokeStyle='#9fe3ff'; g.beginPath(); g.arc(L.x|0, L.y|0, 6, 0, 7); g.stroke();
+      g.fillStyle='#e9e4d8'; g.fillText(L.ch, L.x|0, (L.y|0)+1); });
+  }
+  if(!(stun && t%6<3)){
+    const rows = (t>>3)%2 ? SUB.map(r => r.replace(/R/g,'.')) : SUB;
+    spr(rows, sub.x, sub.y, '#f0c23a');
+  }
+  if(t%10<5){ g.fillStyle='#6fb7dd'; g.fillRect(sub.x+23|0, sub.y+6+(t%20<10?0:-2), 1, 1); }
+  pops.forEach(p => { g.strokeStyle='rgba(159,227,255,'+Math.min(1,p.life/16)+')'; g.beginPath(); g.arc(p.x|0,p.y|0,p.r,0,7); g.stroke(); });
+  g.font = '5px "Press Start 2P", monospace'; g.textAlign='center'; g.textBaseline='middle';
+  floats.forEach(f => { g.fillStyle = 'rgba(240,194,58,'+Math.min(1,f.life/20)+')'; g.fillText(f.txt, f.x|0, f.y|0); });
+}
+// fixed 60Hz simulation so a 120Hz screen doesn't play at double speed
+let last = performance.now(), acc = 0;
+(function loop(now){ now = now || performance.now(); acc = Math.min(acc + now - last, 250); last = now;
+  if(root.classList.contains('game')){ while(acc >= 1000/60){ update(); acc -= 1000/60; } draw(); } else acc = 0;
+  requestAnimationFrame(loop); })();
+renderScore(); title();
+// test hook for the playtest script; harmless in production
+window.__pd = { get mode(){return mode}, get wi(){return wi}, get found(){return found.length},
+  get bonus(){return bonusFound}, get surfer(){return surferFound}, get score(){return score}, get W(){return W},
+  get surferOn(){return !!surfer}, get t(){return t},
+  aim(){ const l = octos.filter(o=>o.alive && !o.flee);
+    const tg = (surfer && !surferFound && {x: surfer.x + surfer.v*70 - 1}) || (bottle && {x: bottle.x + bottle.v*55}) || l.sort((a,b)=>b.y-a.y)[0];
+    return tg ? tg.x+6-(sub.x+10) : 0; } };
+})();
+</script>
+</body>
+</html>
