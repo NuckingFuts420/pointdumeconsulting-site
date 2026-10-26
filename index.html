@@ -37,7 +37,8 @@
     text-shadow:0 0 calc(var(--u)*3) #3fb6ff;transition:top 1s ease-in-out}
   .intro #title{top:calc(var(--a) + var(--u)*17);animation:flash .18s steps(2) 8,glow 2.4s ease-in-out 1.5s infinite}
   .play #title{top:calc(var(--u)*29)}
-  #pillars{position:absolute;left:0;right:0;font-size:calc(var(--u)*3.3);color:#3d6f8f;white-space:nowrap;transition:top 1s ease-in-out}
+  #pillars{position:absolute;left:50%;transform:translateX(-50%);width:min(86%,calc(var(--u)*196));font-size:calc(var(--u)*3.3);line-height:1.8;color:#3d6f8f;white-space:normal;transition:top 1s ease-in-out}
+  #pillars .p{white-space:nowrap}
   .intro #pillars{top:calc(var(--a) + var(--u)*32);color:#9fe3ff}
   .play #pillars{top:calc(var(--u)*42)}
   #pillars .p.live{color:#9fe3ff}
@@ -45,10 +46,10 @@
   #pillars .dot{color:#2b5f80;margin:0 calc(var(--u)*.4)}
   #pillars .s{display:inline-block}
   #pillars .s.on{animation:pop .35s}
-  #box{position:absolute;left:50%;transform:translateX(-50%);width:min(92%,calc(var(--u)*206));top:var(--a);height:calc(var(--u)*44);
+  #box{position:absolute;left:50%;transform:translateX(-50%);width:min(92%,calc(var(--u)*206));top:var(--a);height:calc(var(--u)*52);
     border:calc(var(--u)*.8) solid #2b7fae;background:rgba(2,12,24,.82);box-shadow:0 0 0 calc(var(--u)*.8) #020a14,0 0 calc(var(--u)*8) #0b3a5c;transition:opacity .6s}
   .play #box{opacity:0}
-  #intro{position:absolute;left:8%;right:8%;top:calc(var(--a) + var(--u)*52);display:flex;flex-direction:column;gap:calc(var(--u)*4);align-items:center}
+  #intro{position:absolute;left:8%;right:8%;top:calc(var(--a) + var(--u)*60);display:flex;flex-direction:column;gap:calc(var(--u)*4);align-items:center}
   .play #intro{display:none}
   #intro .go{font-size:calc(var(--u)*4);color:#9fe3ff;animation:blink 1s steps(2) infinite}
   #intro .k{font-size:calc(var(--u)*3);color:#6fa8c8;letter-spacing:.15em}
@@ -150,6 +151,8 @@ const FILES = {
     how:'Reads job postings across five applicant-tracking systems and company career sites and flags accounts whose posts describe replacing or moving an ERP system. Each flag carries the sentence and the link. 1,479 accounts searched.' },
   psych: { who:'M&A advisory practice', what:'Acquisition-target scoring', st:'DELIVERED', url:'/work/acquisition-target-scoring/',
     how:'Scores psychiatry practices for a buyer on the rates insurers have contracted to pay them, from price-transparency files, the federal provider registry and Medicare data. 1,334 practices scored 0\u2013100, with reasons and red flags.' },
+  ops: { who:'How we build an operating layer', what:'One window for the whole firm', st:'', url:'/ai-operating-layer/',
+    how:'Get the data into one place first, connect the systems the firm already runs, then automate one department at a time. People review the work instead of doing it.' },
   agent: { who:'How we build an agent', what:'One job, end to end', st:'', url:'/programmatic-agents/',
     how:'Pull from every source, normalize, check, publish, and keep the file, the changes, the approver and the time for every step. Clean runs finish on their own. A person approves the exceptions.' },
   brain: { who:'How we build a firm\u2019s AI brain', what:'Private AI', st:'', url:'/private-ai/',
@@ -159,7 +162,7 @@ const FILES = {
 const PILLARS = [
   { word:'TARGETING AND SCORING', line:'We work with your sales team to find what your best deals had in common, then score your whole market on it. Your team\u2019s instincts about why you win become signals we can find and rank.', file: FILES.cre },
   { word:'PROGRAMMATIC AGENTS', line:'Software that takes over one repeating job and runs it for years. No per-run fees, your company\u2019s AI can call it as a tool, and you can own the code.', file: FILES.agent },
-  { word:'AI OPERATING LAYER', line:'Your data in one place, every system connected, one window for your team, and the firm\u2019s processes automated department by department.', file: FILES.agent },
+  { word:'AI OPERATING LAYER', line:'Your data in one place, every system connected, one window for your team, and the firm\u2019s processes automated department by department.', file: FILES.ops },
   { word:'PRIVATE AI', line:'Your firm\u2019s documents and history in one private system your team can ask questions, with each person seeing only what they could already open.', file: FILES.brain },
 ];
 const BONUS = FILES.psych;
@@ -173,11 +176,14 @@ const LANES = [
   { name:'PROGRAMMATIC AGENTS', an:'Like a deckhand: one job, done the same way, without being asked.', mean:PILLARS[1].line,
     ex:['A weekly pipeline-change report built from three systems, with the odd cases sent to a person','An analyst\u2019s spreadsheet rules rewritten as tested, versioned code','Supplier nonconformities logged, routed and chased to a corrective action'],
     work: [FILES.agent] },
-  { name:'PRIVATE AI', an:'Like the ship\u2019s logbook, if it could answer back.', mean:PILLARS[2].line,
+  { name:'AI OPERATING LAYER', an:'Like the bridge of a ship: every instrument on one console.', mean:PILLARS[2].line,
+    ex:['Questions across every fund, answered from the firm\u2019s own data','Administrator statements checked against the firm\u2019s records','Replies drafted for a person to approve'],
+    work:[FILES.ops] },
+  { name:'PRIVATE AI', an:'Like the ship\u2019s logbook, if it could answer back.', mean:PILLARS[3].line,
     ex:['\u201cWhat did we tell this client last year?\u201d','\u201cWhich deals did we pass on, and why?\u201d','A new hire\u2019s questions, without pulling a partner off a deal'],
     work:[FILES.brain] },
 ];
-const TOGETHER = 'Targeting and scoring find who to sell to. Agents do the repeat work. Private AI remembers it all.';
+const TOGETHER = 'Targeting and scoring find who to sell to. Agents do the repeat work. The operating layer ties the firm together. Private AI remembers it all.';
 const tag = f => f.st ? ` &middot; ${f.st}` : '';
 
 // ---- sprites: X body, W eye, P pupil, O porthole, D shade, R prop, K cork, G glass, C paper, S surfer, B board ----
@@ -222,7 +228,7 @@ function renderPillars(){
   $pil.innerHTML = PILLARS.map((p,i) => {
     if(mode==='title' || i < wi || (i===wi && mode==='card')) return `<span class="p done">${p.word.replace(' ','&nbsp;')}</span>`;
     if(i === wi && (mode==='play'||mode==='bonus')) return `<span class="p live">${slots.map(s=>`<span class="s${s.on&&s.ch!==' '?' on':''}">${s.ch===' '?'&nbsp;':(s.on?s.ch:'?')}</span>`).join('')}</span>`;
-    return `<span class="p">${p.word.replace(/[^ ]/g,'?').replace(' ','&nbsp;')}</span>`; }).join('<span class="dot">&middot;</span>');
+    return `<span class="p">${p.word.replace(/[^ ]/g,'?').replace(' ','&nbsp;')}</span>`; }).join(' <span class="dot">&middot;</span> ');
 }
 const total = () => found.length + (bonusFound?1:0) + (surferFound?1:0);
 function renderLog(){ $log.textContent = mode==='title' ? '' : `FILES ${total()}/6`; }
