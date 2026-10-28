@@ -211,10 +211,30 @@ const $score = document.getElementById('score');
 function renderScore(){ $score.innerHTML = `SCORE ${String(score).padStart(6,'0')}<br><span class="hi">HI ${String(hi).padStart(6,'0')}</span>`; }
 let floats = [];
 function award(n, x, y){ score += n; if(score > hi){ hi = score; localStorage.setItem('pdc-hi', hi); } renderScore();
+  if(D.lives && score >= nextLife){ nextLife = Infinity; lives++; renderLog(); floats.push({x: sub.x+11, y: sub.y-8, txt:'+1 SUB', life:70}); }
   if(x !== undefined) floats.push({x, y, txt:'+'+n, life:45}); }
 
+// ---- difficulty: one setting, tuned to play like the arcade (Alex 10/28: Swell only, no picker) ----
+// lives, rows, march speed (+ per wave), speed-up as the school thins, drop per edge, ink fire interval
+// (- per wave, floor), ink speed, share of ink aimed at the sub, torpedoes on screen, reefs, clear-all, overrun
+const D = { name:'SWELL', lives:3, rows:4, sp:.18, spW:.05, ramp:3, drop:4, fire:58, fireW:10, fireMin:22, ink:1.5, aim:.25, shots:1, reef:true, clearAll:false, overrun:'life' };
+let lives = 0, nextLife = 1500;
+
+// reefs: Space Invaders' shields. Coral that both sides chew through.
+const REEF = ["....XXXXXXXXXX....","...XXXXXXXXXXXX...","..XXXXXXXXXXXXXX..",".XXXXXXXXXXXXXXXX.","XXXXXXXXXXXXXXXXXX",
+              "XXXXXXXXXXXXXXXXXX","XXXXXXXXXXXXXXXXXX","XXXXX........XXXXX","XXXX..........XXXX","XXX............XXX"];
+const RW = 18, RH = REEF.length;
+let reefs = [];
+function buildReefs(){ reefs = []; if(!D.reef) return; const n = W >= 320 ? 5 : 4, gap = W/n;
+  for(let k=0;k<n;k++) reefs.push({x: Math.round(gap*k + gap/2 - RW/2), y: sub.y - 24, px: REEF.map(r => [...r].map(c => c==='X'))}); }
+function blast(r, i, j){ for(let a=-2;a<=2;a++) for(let b=-2;b<=2;b++){ if(Math.abs(a)+Math.abs(b) > 2 + (Math.random()<.5)) continue;
+  const y = j+a, x = i+b; if(y>=0 && y<RH && x>=0 && x<RW) r.px[y][x] = false; } }
+function reefHit(x, y, h){ for(const r of reefs){ const i = Math.floor(x - r.x); if(i<0 || i>=RW) continue;
+  for(let yy=Math.floor(y); yy<=y+h; yy++){ const j = yy - r.y; if(j>=0 && j<RH && r.px[j][i]){ blast(r, i, j); return true; } } } return false; }
+
 // ---- state ----
-const ROWS = 3, SP = 16, VS = 14, TOP = 66;
+const SP = 16, VS = 14, TOP = 66;
+let ROWS = 3;
 let COLS = 9, mode = 'title', t = 0, wi = 0, stun = 0, cooldown = 0, lockUntil = 0, clearing = false;
 sub.x = W/2-11; sub.y = H-36;
 let shots = [], inks = [], octos = [], pops = [], letters = [], slots = [], bottle = null, surfer = null;
@@ -231,7 +251,7 @@ function renderPillars(){
     return `<span class="p">${p.word.replace(/[^ ]/g,'?').replace(' ','&nbsp;')}</span>`; }).join(' <span class="dot">&middot;</span> ');
 }
 const total = () => found.length + (bonusFound?1:0) + (surferFound?1:0);
-function renderLog(){ $log.textContent = mode==='title' ? '' : `FILES ${total()}/6`; }
+function renderLog(){ $log.textContent = mode==='title' ? '' : `FILES ${total()}/6` + (D.lives ? ` \u00b7 SUBS ${Math.max(0,lives)}` : ''); }
 function panel(html, cls){ $panel.innerHTML = html; $panel.className = cls || ''; $panel.scrollTop = 0; lockUntil = performance.now()+700; }
 function hidePanel(){ $panel.className = 'hide'; }
 
@@ -239,18 +259,18 @@ function startWave(i){
   wi = i; mode = 'play'; hidePanel(); setStage('play');
   slots = [...PILLARS[i].word].map(ch => ({ch, on: ch===' '}));
   $depth.textContent = `DEPTH ${String((i+1)*100).padStart(3,'0')}M`;
-  COLS = Math.max(9, Math.min(13, Math.floor((W-60)/SP)));
+  COLS = Math.max(9, Math.min(13, Math.floor((W-60)/SP))); ROWS = D.rows;
   const idx = slots.map((s,k)=>s.ch===' '?-1:k).filter(k=>k>=0);
   const cells = [...Array(ROWS*COLS).keys()].sort(() => Math.random()-.5);
   const carrier = new Map(idx.map((k,n) => [cells[n], k]));
   octos = [];
   for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++){ const n = r*COLS+c;
     octos.push({ slot: carrier.has(n) ? carrier.get(n) : -1, x: W/2 - COLS*SP/2 + c*SP + 2, y: TOP + r*VS, alive:true, flee:false, ph:(r+c)%2 }); }
-  dir = 1; speed = .14 + i*.04; shots = []; inks = []; bottle = null; letters = []; clearing = false;
+  dir = 1; speed = D.sp + i*D.spW; shots = []; inks = []; bottle = null; letters = []; clearing = false; stun = 0; buildReefs();
   renderPillars(); renderLog();
 }
 function title(){
-  mode = 'title'; wi = 0; octos = []; hidePanel(); setStage('intro');
+  mode = 'title'; wi = 0; octos = []; reefs = []; hidePanel(); setStage('intro');
   renderPillars(); renderLog(); $depth.textContent = '';
 }
 function cardFor(p, n){
@@ -290,6 +310,17 @@ function finish(){
     <ul>${rows}</ul>
     <div class="b">Something you need to find, or decide?</div>
     <div class="h"><a href="mailto:${CONTACT}">${CONTACT}</a></div>
+    <div class="go">SPACE TO DIVE AGAIN</div>`);
+}
+
+function hitSub(){ if(clearing) return; stun = 50; pops.push({x:sub.x+11, y:sub.y+6, r:3, life:24});
+  if(!D.lives) return; lives--; renderLog(); if(lives <= 0) gameOver(); }
+function gameOver(){
+  mode = 'over'; renderLog();
+  panel(`<div class="k">GAME OVER</div>
+    <div class="h">${total()}/6 FILES &middot; SCORE ${score}</div>
+    <div class="b">The school won this round. Every case file is also on the site.</div>
+    <a class="more" href="#site" data-skip>READ THE SITE &rarr;</a>
     <div class="go">SPACE TO DIVE AGAIN</div>`);
 }
 
@@ -336,18 +367,19 @@ $menu.addEventListener('click', e => { const b = e.target.closest('button'); if(
   if(mode==='menu' && page===b.dataset.p){ lockUntil = 0; advance(); } else openPage(b.dataset.p); });
 $panel.addEventListener('click', e => {
   const tb = e.target.closest('[data-tab]'); if(tb){ workTab = +tb.dataset.tab; openPage('work'); return; }
+  if(e.target.closest('[data-skip]')){ skip(e); return; }
   if(e.target.tagName!=='A' && mode!=='menu') advance(); });
 
 function advance(){
   if(performance.now() < lockUntil) return;
   if(mode==='menu') { closePage(); return; }
-  if(mode==='title') { found = []; bonusFound = false; surferFound = false; score = 0; renderScore(); startWave(0); }
+  if(mode==='title') { found = []; bonusFound = false; surferFound = false; score = 0; lives = D.lives; nextLife = 1500; renderScore(); startWave(0); }
   else if(mode==='card') { if(wi+1 < PILLARS.length) startWave(wi+1); else finish(); }
   else if(mode==='bonus') { mode = surferResume; surferResume = 'play';
     if(mode==='title') { hidePanel(); setStage('intro'); } else hidePanel(); }
-  else if(mode==='end') title();
+  else if(mode==='end' || mode==='over') title();
 }
-function fire(){ if(mode!=='play'||cooldown>0||stun>0) return; shots.push({x:sub.x+10, y:sub.y-1}); cooldown = 10; }
+function fire(){ if(mode!=='play'||cooldown>0||stun>0||shots.length>=D.shots) return; shots.push({x:sub.x+10, y:sub.y-1}); cooldown = 10; }
 
 // ---- input: arrows + space ----
 addEventListener('keydown', e => {
@@ -395,18 +427,26 @@ function update(){
   }
   sub.x = Math.max(2, Math.min(W-24, sub.x));
 
-  shots.forEach(s => s.y -= 3.2); shots = shots.filter(s => s.y > 0);
-  inks.forEach(s => { s.y += 1.1; s.x += Math.sin((t+s.y)*.2)*.3; }); inks = inks.filter(s => s.y < H-18);
+  shots.forEach(s => { s.y -= 3.2; if(reefs.length && reefHit(s.x, s.y, 4)) s.y = -99; }); shots = shots.filter(s => s.y > 0);
+  inks.forEach(s => { s.y += D.ink; s.x += Math.sin((t+s.y)*.2)*.3; if(reefs.length && reefHit(s.x, s.y, 3)) s.y = H; }); inks = inks.filter(s => s.y < H-18);
 
   octos.forEach(o => { if(o.flee){ o.y -= 2.2; if(o.y < SURF-14) o.alive = false; } });
   const live = octos.filter(o => o.alive && !o.flee);
   let edge = false;
-  const pace = speed * (1 + 2*(1 - live.length/octos.length));
+  const pace = speed * (1 + D.ramp*(1 - live.length/octos.length));
   live.forEach(o => { o.x += dir*pace; if(o.x<3||o.x>W-15) edge = true; });
-  if(edge){ dir*=-1; live.forEach(o => { o.y += 4; o.x += dir; }); }
-  if(live.some(o => o.y > sub.y-16)) live.forEach(o => o.y -= 60);   // they back off; nobody dies
-  if(live.length && t % Math.max(28, 80-wi*14) === 0){
-    const pick = live[(Math.random()*live.length)|0];
+  if(edge){ dir*=-1; live.forEach(o => { o.y += D.drop; o.x += dir; }); }
+  // octopi swimming through a reef eat it
+  reefs.forEach(r => live.forEach(o => { if(o.y+12 < r.y || o.y > r.y+RH || o.x+12 < r.x || o.x > r.x+RW) return;
+    for(let j=0;j<RH;j++) for(let i=0;i<RW;i++){ const x = r.x+i, y = r.y+j; if(x>=o.x && x<=o.x+12 && y>=o.y && y<=o.y+12) r.px[j][i] = false; } }));
+  if(live.some(o => o.y > sub.y-16)){
+    if(D.overrun==='over'){ if(!clearing){ gameOver(); return; } }
+    else { live.forEach(o => o.y -= 60); if(D.overrun==='life'){ stun = 0; hitSub(); if(mode!=='play') return; } }   // CALM: they back off; nobody dies
+  }
+  if(live.length && t % Math.max(D.fireMin, D.fire-wi*D.fireW) === 0){
+    const aimX = sub.x+11;
+    const pick = Math.random() < D.aim ? live.reduce((a,b) => Math.abs(b.x+6-aimX) < Math.abs(a.x+6-aimX) ? b : a)
+                                       : live[(Math.random()*live.length)|0];
     const shooter = live.filter(o => Math.abs(o.x-pick.x)<2).sort((a,b)=>b.y-a.y)[0];
     inks.push({x:shooter.x+6, y:shooter.y+12});
   }
@@ -433,15 +473,17 @@ function update(){
         surfer = null; if(first) surferCard('play'); } }
   });
 
-  inks.forEach(k => { if(stun===0 && k.x>sub.x && k.x<sub.x+22 && k.y>sub.y+3 && k.y<sub.y+12){ stun = 50; k.y = H; } });
+  inks.forEach(k => { if(mode==='play' && stun===0 && k.x>sub.x && k.x<sub.x+22 && k.y>sub.y+3 && k.y<sub.y+12){ k.y = H; hitSub(); } });
+  if(mode!=='play') return;
 
   letters.forEach(L => { L.life++; L.y -= .9; L.x += Math.sin(L.life*.15)*.4;
     if(L.life>40 && !L.done){ L.done = true; pops.push({x:L.x, y:L.y, r:3, life:16});
-      slots[L.slot].on = true; renderPillars();
-      if(slots.every(s=>s.on) && !clearing){ clearing = true; award(PTS.word);
-        octos.forEach(o => { if(o.alive) o.flee = true; });   // word's done: the rest of the school bolts
-        setTimeout(() => { clearing = false; found.push(wi); cardFor(PILLARS[wi], wi+1); }, 1100); } } });
+      slots[L.slot].on = true; renderPillars(); } });
   letters = letters.filter(L => !L.done);
+  // wave clears when the word is spelled (OVERHEAD and up: and the whole school is gone)
+  if(!clearing && !letters.length && slots.every(s=>s.on) && (!D.clearAll || !octos.some(o => o.alive && !o.flee))){ clearing = true; award(PTS.word);
+    octos.forEach(o => { if(o.alive) o.flee = true; });   // word's done: the rest of the school bolts
+    setTimeout(() => { clearing = false; if(mode==='over') return; found.push(wi); cardFor(PILLARS[wi], wi+1); }, 1100); }
 }
 
 // ---- draw ----
@@ -469,6 +511,7 @@ function draw(){
   g.fillStyle='#6fb7dd'; ambient.forEach(b => g.fillRect(b.x|0,b.y|0,b.r,b.r));
 
   if(mode!=='title' && mode!=='end'){
+    reefs.forEach(r => { for(let j=0;j<RH;j++) for(let i=0;i<RW;i++) if(r.px[j][i]){ g.fillStyle = (i+j)%3 ? '#d9825f' : '#a85a44'; g.fillRect(r.x+i, r.y+j, 1, 1); } });
     octos.forEach(o => { if(o.alive) spr(OCTO[(Math.floor(t/20)+o.ph)%2], o.x, o.y, '#e9e4d8', o.slot>=0 ? '#f0c23a' : null); });
     if(bottle) spr(BOTTLE, bottle.x, bottle.y);
     g.fillStyle='#ffe9a8'; shots.forEach(s => g.fillRect(s.x|0, s.y|0, 1, 4));
@@ -495,7 +538,8 @@ renderScore(); title();
 // test hook for the playtest script; harmless in production
 window.__pd = { get mode(){return mode}, get wi(){return wi}, get found(){return found.length},
   get bonus(){return bonusFound}, get surfer(){return surferFound}, get score(){return score}, get W(){return W},
-  get surferOn(){return !!surfer}, get t(){return t},
+  get surferOn(){return !!surfer}, get t(){return t}, get lives(){return lives},
+  get reefPx(){return reefs.reduce((n,r)=>n+r.px.flat().filter(Boolean).length,0)}, get inks(){return inks.length},
   aim(){ const l = octos.filter(o=>o.alive && !o.flee);
     const tg = (surfer && !surferFound && {x: surfer.x + surfer.v*70 - 1}) || (bottle && {x: bottle.x + bottle.v*55}) || l.sort((a,b)=>b.y-a.y)[0];
     return tg ? tg.x+6-(sub.x+10) : 0; } };
