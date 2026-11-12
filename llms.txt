@@ -1,21 +1,24 @@
 # Point Dume Consulting
 
-We turn client experience into clear criteria, measurable signals, and ranked prospects. We also build business automation and systems for company information.
+> AI that does real work.
 
-- About Alex Kashtan and Point Dume Consulting: https://pointdumeconsulting.com/about/
-- Sales research and targeting | Point Dume Consulting: https://pointdumeconsulting.com/account-targeting/
-- Business systems and AI | Point Dume Consulting: https://pointdumeconsulting.com/ai-operating-layer/
-- Questions about using AI in a business | Point Dume Consulting: https://pointdumeconsulting.com/answers/
-- How can AI help my sales team? | Point Dume Consulting: https://pointdumeconsulting.com/answers/ai-help-for-a-sales-team/
-- Researching property owners who may sell | Point Dume Consulting: https://pointdumeconsulting.com/answers/find-commercial-property-owners-who-may-sell/
-- Finding SAP S/4HANA migration signals | Point Dume Consulting: https://pointdumeconsulting.com/answers/find-companies-planning-sap-s4hana-migration/
-- Using AI with company documents | Point Dume Consulting: https://pointdumeconsulting.com/answers/how-to-build-an-ai-brain-for-your-company/
-- Choosing help with AI for your business | Point Dume Consulting: https://pointdumeconsulting.com/answers/who-can-help-set-up-ai-for-my-business/
-- Contact Alex Kashtan | Point Dume Consulting: https://pointdumeconsulting.com/contact/
-- Point Dume Consulting FAQ: https://pointdumeconsulting.com/faq/
-- AI for your company documents | Point Dume Consulting: https://pointdumeconsulting.com/private-ai/
-- Workflow automation | Point Dume Consulting: https://pointdumeconsulting.com/programmatic-agents/
-- Account-research projects | Point Dume Consulting: https://pointdumeconsulting.com/work/
-- Acquisition-target research project | Point Dume Consulting: https://pointdumeconsulting.com/work/acquisition-target-scoring/
-- ERP hiring-signal research project | Point Dume Consulting: https://pointdumeconsulting.com/work/hiring-signal-screen/
-- Property-record screening project | Point Dume Consulting: https://pointdumeconsulting.com/work/off-market-seller-screen/
+Point Dume Consulting builds AI that does real work: account targeting from public records, agents that each run one repeating job, an AI operating layer across a company's systems, and private AI that answers from a company's own documents. Based in Los Angeles. Managing Partner: Alex Kashtan.
+
+- [Account targeting](https://pointdumeconsulting.com/account-targeting/)
+- [Programmatic agents](https://pointdumeconsulting.com/programmatic-agents/)
+- [AI operating layer](https://pointdumeconsulting.com/ai-operating-layer/)
+- [Private AI](https://pointdumeconsulting.com/private-ai/)
+- [Work](https://pointdumeconsulting.com/work/)
+- [Off-market seller screen](https://pointdumeconsulting.com/work/off-market-seller-screen/)
+- [Hiring-signal screen](https://pointdumeconsulting.com/work/hiring-signal-screen/)
+- [Acquisition-target scoring](https://pointdumeconsulting.com/work/acquisition-target-scoring/)
+- [Sales signal engine](https://pointdumeconsulting.com/work/sales-signal-engine/)
+- [Answers](https://pointdumeconsulting.com/answers/)
+- [How to build an AI brain for your company](https://pointdumeconsulting.com/answers/how-to-build-an-ai-brain-for-your-company/)
+- [Who can help set up AI for my business?](https://pointdumeconsulting.com/answers/who-can-help-set-up-ai-for-my-business/)
+- [How do I get AI help for my sales team?](https://pointdumeconsulting.com/answers/ai-help-for-a-sales-team/)
+- [Finding property owners who may sell before they list](https://pointdumeconsulting.com/answers/find-commercial-property-owners-who-may-sell/)
+- [Finding companies planning an SAP S/4HANA migration](https://pointdumeconsulting.com/answers/find-companies-planning-sap-s4hana-migration/)
+- [About](https://pointdumeconsulting.com/about/)
+- [Contact](https://pointdumeconsulting.com/contact/)
+- [FAQ](https://pointdumeconsulting.com/faq/)
